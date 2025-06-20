@@ -67,10 +67,16 @@
     
     # Development
     vscode
+    git
     
     # Space-themed applications
     stellarium  # Planetarium software
-    celestia    # 3D space simulator
+    # celestia    # 3D space simulator (may need unstable channel)
+    
+    # System utilities
+    htop
+    tree
+    unzip
     
     # Fonts
     (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
@@ -82,19 +88,29 @@
     xserver.enable = true;
     displayManager.sddm = {
       enable = true;
-      theme = "astronaut";
+      # Note: Custom themes may need additional configuration in 25.05
     };
     pipewire = {
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
+      jack.enable = true;  # Added for 25.05
     };
   };
 
+  # Security and hardware
+  security.rtkit.enable = true;  # For pipewire
+  hardware.pulseaudio.enable = false;  # Use pipewire instead
+  
+  # Graphics drivers (uncomment as needed)
+  # hardware.opengl.enable = true;  # For older configs
+  # hardware.graphics.enable = true;  # New in 25.05
+  
   # Hyprland configuration
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
+    # systemd.setPath.enable = true;  # May be needed for some setups
   };
 
   # ZSH configuration
@@ -129,12 +145,13 @@
     };
   };
 
-  # Home Manager configuration
-  home-manager = {
+  # Home Manager configuration (you'll need to add home-manager to your flake or channels)
+  # Uncomment and configure if using home-manager
+  # home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.cosmonaut = { pkgs, ... }: {
-      home.stateVersion = "23.11";
+      home.stateVersion = "24.05";
       
       # Ghostty terminal configuration
       home.file.".config/ghostty/config".text = ''
@@ -593,9 +610,10 @@
           }
         '';
       };
-    };
-  };
+  # };
 
-  # System version
-  system.stateVersion = "23.11";
+  # Alternative: Create config files directly in environment
+  environment.etc = {
+    "skel/.config/ghostty/config".text = ''
+  system.stateVersion = "24.05";
 }
