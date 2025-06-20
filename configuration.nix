@@ -219,7 +219,7 @@
         
         # Input configuration
         input {
-            kb_layout = us
+            kb_layout = de
             follow_mouse = 1
             touchpad {
                 natural_scroll = no
@@ -374,7 +374,7 @@
             },
             
             "clock": {
-                "format": "{:%H:%M 🌍 %Y-%m-%d}",
+                "format": "{:%H:%M 🌍 %d-%m-%Y}",
                 "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
             },
             
