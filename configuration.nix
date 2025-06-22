@@ -91,12 +91,6 @@
     htop
     tree
     unzip
-    
-    # Fonts
-    nerd-fonts.fira-code
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.iosevka
-    font-awesome
   ];
 
   # Enable services
@@ -145,19 +139,18 @@
     };
   };
 
-  # Fonts
+  # Fonts - Fixed for NixOS 25.05
   fonts = {
     packages = with pkgs; [
       noto-fonts
-      noto-fonts-cjk
+      noto-fonts-cjk-sans  # Fixed: was noto-fonts-cjk
       noto-fonts-emoji
       liberation_ttf
       fira-code
       fira-code-symbols
       jetbrains-mono
-      nerd-fonts.fira-code
-      nerd-fonts.jetbrains-mono
-      nerd-fonts.iosevka
+      # Fixed nerd-fonts syntax for 25.05
+      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
     ];
     fontconfig = {
       enable = true;
@@ -295,7 +288,6 @@
       windowrule = float, ^(pavucontrol)$
       windowrule = float, ^(thunar)$
       windowrulev2 = opacity 0.9 0.9, class:^(ghostty)$
-      windowrulev2 = opacity 0.95 0.95, class:^(code)$
       
       # Keybindings
       $mainMod = SUPER
@@ -310,7 +302,6 @@
       bind = $mainMod, P, pseudo,
       bind = $mainMod, J, togglesplit,
       bind = $mainMod, F, fullscreen,
-      bind = $mainMod, C, exec, code
       bind = $mainMod, B, exec, firefox
       
       # Move focus
