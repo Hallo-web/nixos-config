@@ -81,7 +81,6 @@
     pavucontrol
     
     # Development
-    vscode
     git
     
     # Space-themed applications
