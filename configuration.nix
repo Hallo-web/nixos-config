@@ -73,7 +73,7 @@
     starship
     
     # File management
-    thunar
+    xfce.thunar
     ranger
     
     # Media and graphics
