@@ -69,7 +69,6 @@
     # Terminal and shell
     ghostty
     zsh
-    oh-my-zsh
     starship
     
     # File management
@@ -95,7 +94,9 @@
     unzip
     
     # Fonts
-    (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.iosevka
     font-awesome
   ];
 
@@ -122,11 +123,11 @@
 
   # Security and hardware
   security.rtkit.enable = true;  # For pipewire
-  hardware.pulseaudio.enable = false;  # Use pipewire instead
+  services.pulseaudio.enable = false;  # Use pipewire instead
   
   # Graphics drivers (uncomment as needed)
-  # hardware.opengl.enable = true;  # For older configs
-  # hardware.graphics.enable = true;  # New in 25.05
+  # hardware.opengl.enable = true;  # For older configs, deprecated in 25.05
+  hardware.graphics.enable = true;  # New in 25.05 - replaces hardware.opengl
   
   # Hyprland configuration
   programs.hyprland = {
@@ -155,7 +156,9 @@
       fira-code
       fira-code-symbols
       jetbrains-mono
-      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
+      nerd-fonts.fira-code
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.iosevka
     ];
     fontconfig = {
       enable = true;
