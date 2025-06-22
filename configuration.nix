@@ -23,7 +23,6 @@
   # Console keyboard layout
   console = {
     keyMap = "de";
-    useXkbConfig = true;
   };
 
   # Enable flakes
