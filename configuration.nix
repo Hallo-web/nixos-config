@@ -29,22 +29,24 @@
   # Enable flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # User configuration - cosmonaut as root user with no password
+  # User configuration - cosmonaut as normal user with sudo privileges and no password
   users.users.cosmonaut = {
-    isNormalUser = false;
-    isSystemUser = false;
-    uid = 0;  # Root UID
-    group = "root";
-    description = "Space Explorer (Root)";
+    isNormalUser = true;
+    description = "Space Explorer";
     extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
     shell = pkgs.zsh;
-    hashedPassword = null;  # No password
-    initialPassword = "";   # Empty password
+    hashedPassword = "";  # Empty password hash
   };
 
-  # Allow empty passwords
+  # Root user configuration - allow empty password
+  users.users.root = {
+    hashedPassword = "";  # Allow root login with empty password
+  };
+
+  # Allow empty passwords and passwordless sudo
   security.sudo.wheelNeedsPassword = false;
-  users.mutableUsers = false;
+  security.pam.services.su.allowNullPassword = true;
+  security.pam.services.login.allowNullPassword = true;
 
   # System packages
   environment.systemPackages = with pkgs; [
