@@ -583,5 +583,5 @@
     "d /home/cosmonaut/.config/wallpapers 0755 cosmonaut root"
   ];
 
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.05";
 }
