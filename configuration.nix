@@ -152,8 +152,6 @@
       fira-code
       fira-code-symbols
       jetbrains-mono
-      # Updated nerdfonts syntax for 25.05
-      (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
       # ASCII art fonts
       figlet
     ];
