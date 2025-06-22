@@ -1,4 +1,4 @@
-# configuration.nix - Space-Themed NixOS Configuration
+# configuration.nix - Space-Themed NixOS 25.05 Configuration
 { config, pkgs, lib, ... }:
 
 {
@@ -67,7 +67,7 @@
     swappy
     
     # Terminal and shell
-    ghostty
+    alacritty  # Using alacritty instead of ghostty for better compatibility
     zsh
     starship
     
@@ -85,12 +85,16 @@
     
     # Space-themed applications
     stellarium  # Planetarium software
-    # celestia    # 3D space simulator (may need unstable channel)
     
     # System utilities
     htop
     tree
     unzip
+    
+    # Additional utilities for ASCII art
+    figlet
+    lolcat
+    neofetch
   ];
 
   # Enable services
@@ -104,13 +108,14 @@
     };
     displayManager.sddm = {
       enable = true;
-      # Note: Custom themes may need additional configuration in 25.05
+      # Theme configuration for 25.05
+      theme = "breeze";
     };
     pipewire = {
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
-      jack.enable = true;  # Added for 25.05
+      jack.enable = true;
     };
   };
 
@@ -118,15 +123,13 @@
   security.rtkit.enable = true;  # For pipewire
   services.pulseaudio.enable = false;  # Use pipewire instead
   
-  # Graphics drivers (uncomment as needed)
-  # hardware.opengl.enable = true;  # For older configs, deprecated in 25.05
-  hardware.graphics.enable = true;  # New in 25.05 - replaces hardware.opengl
+  # Graphics drivers - Updated for 25.05
+  hardware.graphics.enable = true;  # Replaces hardware.opengl in 25.05
   
   # Hyprland configuration
   programs.hyprland = {
     enable = true;
     xwayland.enable = true;
-    # systemd.setPath.enable = true;  # May be needed for some setups
   };
 
   # ZSH configuration
@@ -139,18 +142,20 @@
     };
   };
 
-  # Fonts - Fixed for NixOS 25.05
+  # Fonts - Updated for NixOS 25.05 compatibility
   fonts = {
     packages = with pkgs; [
       noto-fonts
-      noto-fonts-cjk-sans  # Fixed: was noto-fonts-cjk
+      noto-fonts-cjk-sans
       noto-fonts-emoji
       liberation_ttf
       fira-code
       fira-code-symbols
       jetbrains-mono
-      # Fixed nerd-fonts syntax for 25.05
+      # Updated nerdfonts syntax for 25.05
       (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" "Iosevka" ]; })
+      # ASCII art fonts
+      figlet
     ];
     fontconfig = {
       enable = true;
@@ -164,60 +169,53 @@
 
   # Create configuration directories and files
   environment.etc = {
-    "skel/.config/ghostty/config".text = ''
-      # Space-themed Ghostty configuration
-      theme = "cosmic-nebula"
-      font-family = "JetBrains Mono Nerd Font"
-      font-size = 12
+    "skel/.config/alacritty/alacritty.toml".text = ''
+      # Space-themed Alacritty configuration
       
-      # Colors - Deep space theme
-      background = 0c0c16
-      foreground = e0e0ff
+      [env]
+      TERM = "xterm-256color"
       
-      # Black colors
-      palette = 0=#1a1a2e
-      palette = 8=#16213e
+      [window]
+      padding = { x = 10, y = 10 }
+      decorations = "none"
+      opacity = 0.9
       
-      # Red colors  
-      palette = 1=#ff6b9d
-      palette = 9=#ff8fab
+      [font]
+      normal = { family = "JetBrains Mono Nerd Font", style = "Regular" }
+      bold = { family = "JetBrains Mono Nerd Font", style = "Bold" }
+      italic = { family = "JetBrains Mono Nerd Font", style = "Italic" }
+      size = 12.0
       
-      # Green colors
-      palette = 2=#4ecdc4
-      palette = 10=#6ee7de
+      [colors.primary]
+      background = "#0c0c16"
+      foreground = "#e0e0ff"
       
-      # Yellow colors
-      palette = 3=#ffe66d
-      palette = 11=#ffed85
+      [colors.normal]
+      black = "#1a1a2e"
+      red = "#ff6b9d"
+      green = "#4ecdc4"
+      yellow = "#ffe66d"
+      blue = "#4d79a4"
+      magenta = "#bc85e3"
+      cyan = "#87ceeb"
+      white = "#e0e0ff"
       
-      # Blue colors
-      palette = 4=#4d79a4
-      palette = 12=#6596c3
+      [colors.bright]
+      black = "#16213e"
+      red = "#ff8fab"
+      green = "#6ee7de"
+      yellow = "#ffed85"
+      blue = "#6596c3"
+      magenta = "#d4a5f7"
+      cyan = "#a5ddf0"
+      white = "#ffffff"
       
-      # Magenta colors
-      palette = 5=#bc85e3
-      palette = 13=#d4a5f7
+      [cursor]
+      style = { shape = "Block", blinking = "On" }
       
-      # Cyan colors
-      palette = 6=#87ceeb
-      palette = 14=#a5ddf0
-      
-      # White colors
-      palette = 7=#e0e0ff
-      palette = 15=#ffffff
-      
-      # Window settings
-      window-decoration = false
-      window-padding-x = 10
-      window-padding-y = 10
-      
-      # Cursor
-      cursor-style = block
-      cursor-style-blink = true
-      
-      # Bell
-      audible-bell = false
-      visual-bell = true
+      [bell]
+      animation = "EaseOutExpo"
+      duration = 0
     '';
 
     "skel/.config/hypr/hyprland.conf".text = ''
@@ -287,13 +285,13 @@
       # Window rules
       windowrule = float, ^(pavucontrol)$
       windowrule = float, ^(thunar)$
-      windowrulev2 = opacity 0.9 0.9, class:^(ghostty)$
+      windowrulev2 = opacity 0.9 0.9, class:^(Alacritty)$
       
       # Keybindings
       $mainMod = SUPER
       
       # Application shortcuts
-      bind = $mainMod, Return, exec, ghostty
+      bind = $mainMod, Return, exec, alacritty
       bind = $mainMod, Q, killactive,
       bind = $mainMod, M, exit,
       bind = $mainMod, E, exec, thunar
@@ -303,6 +301,7 @@
       bind = $mainMod, J, togglesplit,
       bind = $mainMod, F, fullscreen,
       bind = $mainMod, B, exec, firefox
+      bind = $mainMod, N, exec, alacritty -e neofetch
       
       # Move focus
       bind = $mainMod, left, movefocus, l
@@ -366,21 +365,21 @@
               "all-outputs": true,
               "format": "{icon}",
               "format-icons": {
-                  "1": "🚀",
-                  "2": "🌌",
-                  "3": "⭐",
-                  "4": "🌙",
-                  "5": "🪐",
-                  "6": "☄️",
-                  "7": "🛸",
-                  "8": "🌠",
-                  "9": "🔭",
-                  "10": "👨‍🚀"
+                  "1": "[ * ]",
+                  "2": "[***]",
+                  "3": "[ + ]",
+                  "4": "[ o ]",
+                  "5": "[oOo]",
+                  "6": "[ ~ ]",
+                  "7": "[^^^]",
+                  "8": "[---]",
+                  "9": "[###]",
+                  "10": "[@@@]"
               }
           },
           
           "clock": {
-              "format": "{:%H:%M 🌍 %d-%m-%Y}",
+              "format": "{:%H:%M [EARTH] %d-%m-%Y}",
               "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
           },
           
@@ -389,22 +388,21 @@
                   "warning": 30,
                   "critical": 15
               },
-              "format": "{capacity}% {icon}",
-              "format-icons": ["🔋", "🔋", "🔋", "🔋", "🔋"]
+              "format": "{capacity}% [PWR]",
+              "format-charging": "{capacity}% [CHG]",
+              "format-plugged": "{capacity}% [AC]"
           },
           
           "network": {
-              "format-wifi": "{essid} 📡",
-              "format-ethernet": "Connected 🌐",
-              "format-disconnected": "Disconnected ❌"
+              "format-wifi": "{essid} [WIFI]",
+              "format-ethernet": "Connected [LAN]",
+              "format-disconnected": "Disconnected [X]"
           },
           
           "pulseaudio": {
-              "format": "{volume}% {icon}",
-              "format-muted": "🔇",
-              "format-icons": {
-                  "default": ["🔈", "🔉", "🔊"]
-              }
+              "format": "{volume}% [VOL]",
+              "format-muted": "[MUTE]",
+              "on-click": "pavucontrol"
           }
       }
     '';
@@ -424,6 +422,7 @@
           border-radius: 12px;
           margin: 8px;
           padding: 0 8px;
+          border: 2px solid #4ecdc4;
       }
       
       #workspaces button {
@@ -432,11 +431,13 @@
           color: #87ceeb;
           border-radius: 8px;
           margin: 2px;
+          font-family: monospace;
       }
       
       #workspaces button.active {
           background: linear-gradient(45deg, #4ecdc4, #bc85e3);
           color: #0c0c16;
+          font-weight: bold;
       }
       
       #clock, #battery, #network, #pulseaudio {
@@ -445,14 +446,18 @@
           background: rgba(78, 205, 196, 0.2);
           border-radius: 8px;
           color: #e0e0ff;
+          border: 1px solid rgba(78, 205, 196, 0.3);
+          font-family: monospace;
       }
       
       #battery.warning {
           background: rgba(255, 230, 109, 0.3);
+          border-color: rgba(255, 230, 109, 0.5);
       }
       
       #battery.critical {
           background: rgba(255, 107, 157, 0.3);
+          border-color: rgba(255, 107, 157, 0.5);
       }
     '';
 
@@ -461,7 +466,7 @@
       height=400
       location=center
       show=drun
-      prompt=Launch into orbit...
+      prompt=[ LAUNCH SEQUENCE INITIATED ]
       filter_rate=100
       allow_markup=true
       no_actions=true
@@ -480,6 +485,7 @@
           border: 3px solid #4ecdc4;
           background: linear-gradient(135deg, rgba(12, 12, 22, 0.95), rgba(26, 26, 46, 0.95));
           border-radius: 16px;
+          font-family: "JetBrains Mono Nerd Font", monospace;
       }
       
       #input {
@@ -490,6 +496,7 @@
           border-radius: 8px;
           padding: 8px;
           font-size: 14px;
+          font-family: monospace;
       }
       
       #inner-box {
@@ -513,6 +520,7 @@
           margin: 5px;
           border: none;
           color: #e0e0ff;
+          font-family: monospace;
       }
       
       #entry {
@@ -524,6 +532,7 @@
       
       #entry:selected {
           background: linear-gradient(45deg, rgba(78, 205, 196, 0.3), rgba(188, 133, 227, 0.3));
+          border: 1px solid rgba(78, 205, 196, 0.5);
       }
     '';
 
@@ -531,6 +540,7 @@
       preload = ~/.config/wallpapers/nebula.jpg
       wallpaper = ,~/.config/wallpapers/nebula.jpg
       splash = false
+      ipc = off
     '';
 
     "skel/.config/starship.toml".text = ''
@@ -557,24 +567,151 @@
       [git_branch]
       style = "bold green"
       format = "\\[[$symbol$branch]($style)\\] "
+      symbol = "[GIT] "
       
       [git_status]
       style = "bold yellow"
       
       [character]
-      success_symbol = "[🚀](bold green)"
-      error_symbol = "[💥](bold red)"
+      success_symbol = "[>>](bold green)"
+      error_symbol = "[XX](bold red)"
       
       [cmd_duration]
       style = "bold yellow"
       format = "took [$duration]($style) "
     '';
+
+    "skel/.config/neofetch/config.conf".text = ''
+      # Neofetch config for space theme
+      
+      print_info() {
+          info title
+          info underline
+          
+          info "OS" distro
+          info "Host" model
+          info "Kernel" kernel
+          info "Uptime" uptime
+          info "Packages" packages
+          info "Shell" shell
+          info "Resolution" resolution
+          info "DE" de
+          info "WM" wm
+          info "WM Theme" wm_theme
+          info "Theme" theme
+          info "Icons" icons
+          info "Terminal" term
+          info "Terminal Font" term_font
+          info "CPU" cpu
+          info "GPU" gpu
+          info "Memory" memory
+          
+          info cols
+      }
+      
+      # ASCII Art
+      ascii_distro="nixos_small"
+      ascii_colors=(4 6 1 8 8 6)
+      ascii_bold="on"
+      
+      # Colors
+      colors=(4 6 1 8 8 7)
+      
+      # Text Options
+      bold="on"
+      underline_enabled="on"
+      underline_char="-"
+      separator=" ->"
+      
+      # Other
+      image_backend="ascii"
+      image_source="auto"
+    '';
+
+    "skel/.zshrc".text = ''
+      # Space-themed ZSH configuration
+      
+      # ASCII Art Welcome
+      echo ""
+      echo "    ███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗ "
+      echo "    ████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗"
+      echo "    ██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║"
+      echo "    ██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║"
+      echo "    ██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║"
+      echo "    ╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝"
+      echo ""
+      echo "    ███████╗████████╗ █████╗ ████████╗██╗ ██████╗ ██╗   ██╗"
+      echo "    ██╔════╝╚══██╔══╝██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║"
+      echo "    ███████╗   ██║   ███████║   ██║   ██║██║   ██║██╔██╗ ██║"
+      echo "    ╚════██║   ██║   ██╔══██║   ██║   ██║██║   ██║██║╚██╗██║"
+      echo "    ███████║   ██║   ██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║"
+      echo "    ╚══════╝   ╚═╝   ╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝"
+      echo ""
+      echo "    Welcome to the NEBULA STATION, Cosmonaut!"
+      echo "    System Status: [ OPERATIONAL ]"
+      echo "    Mission Control: Ready for your commands"
+      echo ""
+      
+      # Enable Powerlevel10k instant prompt
+      if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+        source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+      fi
+      
+      # Starship prompt
+      eval "$(starship init zsh)"
+      
+      # Aliases
+      alias ll='ls -alF'
+      alias la='ls -A'
+      alias l='ls -CF'
+      alias ..='cd ..'
+      alias ...='cd ../..'
+      alias grep='grep --color=auto'
+      alias space='neofetch'
+      alias mission='htop'
+      alias launch='sudo nixos-rebuild switch'
+      alias orbit='systemctl status'
+      alias dock='thunar'
+      
+      # Space-themed functions
+      nebula() {
+          echo "    ╔══════════════════════════════════════╗"
+          echo "    ║        NEBULA SYSTEM STATUS          ║"
+          echo "    ╠══════════════════════════════════════╣"
+          echo "    ║ Hostname: $(hostname)                     ║"
+          echo "    ║ Uptime: $(uptime -p)                 ║"
+          echo "    ║ Load: $(uptime | awk -F'load average:' '{print $2}') ║"
+          echo "    ╚══════════════════════════════════════╝"
+      }
+      
+      # History settings
+      HISTSIZE=10000
+      SAVEHIST=10000
+      setopt SHARE_HISTORY
+      setopt HIST_IGNORE_DUPS
+      setopt HIST_IGNORE_ALL_DUPS
+      setopt HIST_REDUCE_BLANKS
+      
+      # Auto-completion
+      autoload -U compinit
+      compinit
+      
+      # Key bindings
+      bindkey '^R' history-incremental-search-backward
+      
+      # Export environment variables
+      export EDITOR=nvim
+      export BROWSER=firefox
+      export TERMINAL=alacritty
+    '';
   };
 
-  # Create wallpaper directory
+  # Create wallpaper directory and sample ASCII wallpaper
   systemd.tmpfiles.rules = [
-    "d /home/cosmonaut/.config/wallpapers 0755 cosmonaut root"
+    "d /home/cosmonaut/.config/wallpapers 0755 cosmonaut users"
+    "d /home/cosmonaut/.config/neofetch 0755 cosmonaut users"
   ];
 
+  # Set system state version
   system.stateVersion = "25.05";
 }
